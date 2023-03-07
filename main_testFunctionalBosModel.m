@@ -1,0 +1,221 @@
+clc;
+close all;
+clear all;
+
+%This only needs to be done once. If you have the 
+%csv files normBosModelPigBare.csv and normBosModelPigShod.csv in the 
+%data folder you do not need to do this.
+flag_createPigBosFromIorBos=0;
+modelType = 'Shod'; %'Bare' or 'Shod'
+
+bosColorIor = [0,0,1];
+bosColorPig = [1,0,1];
+
+mainDir = pwd;
+codeDir = fullfile(mainDir,'code');
+dataDir = fullfile(mainDir,'data');
+
+addpath('code');
+%%
+% Inputs
+%%
+load(fullfile(dataDir,'Data_PiG_IOR_Static.mat'));
+
+normBosModelIor=readmatrix(...
+    fullfile(dataDir,sprintf('normBosModelIor%s.csv',modelType)));
+
+if(flag_createPigBosFromIorBos==0)
+    normBosModelPig=readmatrix(...
+        fullfile(dataDir,sprintf('normBosModelPig%s.csv',modelType)));
+end
+
+
+index=1; 
+
+mkrPos   = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers;
+mkrNames = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkerNames;
+
+%%
+% Plot configuration
+%%
+maxPlotRows          = 1;
+maxPlotCols          = 1;
+plotWidthCm          = 29.7; 
+plotHeightCm         = 21;
+plotHorizMarginCm    = 1.5;
+plotVertMarginCm     = 1.5;
+
+[subPlotPanel, ...
+ pageWidthCm, ...
+ pageHeightCm]= ...
+      plotConfigGeneric(  maxPlotCols,...
+                          maxPlotRows,...
+                          plotWidthCm,...
+                          plotHeightCm,...
+                          plotHorizMarginCm,...
+                          plotVertMarginCm);
+
+
+%%
+% Plot the markers
+%%
+
+figFoot     =figure;
+
+plotColor                       = [1,0,0];
+seriesLabel                     ='Barefoot';
+seriesLabelPositionNormCoord    = [1,1,1].*0.9;
+subPlotPosition                 =reshape(subPlotPanel(1,1,:),1,4);
+figFoot=plotMarkerPositions(figFoot,mkrPos,plotColor,...
+            seriesLabel,seriesLabelPositionNormCoord,...
+            subPlotPosition);
+
+
+%%
+% Plot the IOR foot frames
+%%
+
+[frameLeftOffsetIor, frameRightOffsetIor]=...
+        getIorFootOffsetFrames(index, mkrPos);
+
+[frameLeftIor, frameRightIor]= getIorFootFrames(...
+                            index, ...
+                            mkrPos, ...
+                            frameLeftOffsetIor, ...
+                            frameRightOffsetIor);
+
+plotAxisScale=0.1;
+figFoot = plotFrame(figFoot,frameLeftIor,plotAxisScale,...
+                    '--',subPlotPosition);
+figFoot = plotFrame(figFoot,frameRightIor,plotAxisScale,...
+                    '--',subPlotPosition);
+
+
+[footLengthIor, midFootLengthIor, footWidthIor] =...
+    getIorFootSize(index, frameLeftIor, frameRightIor, mkrPos);
+
+bosScaledLeftIor = normBosModelIor;
+bosScaledLeftIor(:,1)=bosScaledLeftIor(:,1).*footWidthIor;
+bosScaledLeftIor(:,2)=bosScaledLeftIor(:,2).*footLengthIor;
+
+bosScaledRightIor = [bosScaledLeftIor(:,1).*-1, bosScaledLeftIor(:,2)];
+
+
+
+bosTransformedLeftIor = transformBosModel(bosScaledLeftIor,frameLeftIor);
+bosTransformedRightIor= transformBosModel(bosScaledRightIor,frameRightIor);
+
+figFoot = plotFunctionalBos(figFoot,bosTransformedLeftIor,...
+                                bosColorIor,'--',subPlotPosition);
+figFoot = plotFunctionalBos(figFoot,bosTransformedRightIor,...
+                                bosColorIor,'--',subPlotPosition);
+
+
+%%
+% Plot the PIG foot frames
+%%
+
+%[frameLeftOffset, frameRightOffset]=...
+%        getIorFootOffsetFrames(index, mkrPos, mkrNames);
+
+
+
+mkrPosPig = struct('RTOE',[],'RHEE',[],'RANK',[],...
+                   'LTOE',[],'LHEE',[],'LANK',[]);
+
+frameLeftOffsetPig  = struct('r',zeros(3,1),'E',eye(3,3)); 
+frameRightOffsetPig = struct('r',zeros(3,1),'E',eye(3,3));
+
+mkrPosPig.RTOE = mkrPos.R_FM2_top;
+mkrPosPig.RHEE = mkrPos.R_FCC;
+mkrPosPig.RANK = mkrPos.R_FAL;
+
+mkrPosPig.LTOE = mkrPos.L_FM2_top;
+mkrPosPig.LHEE = mkrPos.L_FCC;
+mkrPosPig.LANK = mkrPos.L_FAL;
+
+
+[frameLeftOffsetPig, frameRightOffsetPig]=...
+        getPigFootOffsetFrames(index, mkrPosPig);
+
+[frameLeftPig, frameRightPig]= getPigFootFrames(...
+                            index, ...
+                            mkrPosPig, ...
+                            frameLeftOffsetPig, ...
+                            frameRightOffsetPig);
+
+
+figFoot = plotFrame(figFoot,frameLeftPig,plotAxisScale,...
+                    '-',subPlotPosition);
+figFoot = plotFrame(figFoot,frameRightPig,plotAxisScale,...
+                    '-',subPlotPosition);
+
+%%
+% Create the Pig BOS from the IOR data
+%%
+
+if(flag_createPigBosFromIorBos==1)
+    % Project the correctly scaled and placed IOR bos into the PIG frame
+    bosModelPigLeft = zeros(size(bosTransformedLeftIor,1),2);
+    bosModelPigRight = zeros(size(bosTransformedLeftIor,1),2);
+    
+    for i=1:1:size(bosTransformedLeftIor,1)
+        r010 = bosTransformedLeftIor(i,:)';
+        rP1P = frameLeftPig.E'*(r010-frameLeftPig.r);
+        bosModelPigLeft(i,:) = [rP1P(1,1),rP1P(2,1)];
+        
+        assert(abs(rP1P(3,1))<1e-6,...
+               ['Error: Something went wrong rP1P is a point on the bos',...
+                'in the foot frame: the z component should be 0 but is not']);
+
+        r010 = bosTransformedRightIor(i,:)';
+        rP1P = frameRightPig.E'*(r010-frameRightPig.r);
+        bosModelPigRight(i,:) = [rP1P(1,1),rP1P(2,1)];
+
+        assert(abs(rP1P(3,1))<1e-6,...
+               ['Error: Something went wrong rP1P is a point on the bos',...
+                'in the foot frame: the z component should be 0 but is not']);        
+        
+    end
+    footLengthPig =(norm(mkrPosPig.('RTOE')-mkrPosPig.('RHEE')) ...
+                  + norm(mkrPosPig.('LTOE')-mkrPosPig.('LHEE'))).*0.5;
+
+    bosModelPigRightMappedLeft = bosModelPigRight;
+    bosModelPigRightMappedLeft(:,1)=bosModelPigRightMappedLeft(:,1).*-1;
+
+    bosModelPig = 0.5.*(bosModelPigLeft+bosModelPigRightMappedLeft);
+
+    normBosModelPig = bosModelPig./footLengthPig;
+
+    cd('data');
+    writematrix(normBosModelPig,...
+        fullfile(dataDir,sprintf('normBosModelPig%s.csv',modelType)));
+    cd 
+end
+
+
+footLengthPig =(norm(mkrPosPig.('RTOE')-mkrPosPig.('RHEE')) ...
+              + norm(mkrPosPig.('LTOE')-mkrPosPig.('LHEE'))).*0.5;
+
+
+bosScaledLeftPig = normBosModelPig.*footLengthPig;
+
+bosScaledRightPig = normBosModelPig.*footLengthPig;
+bosScaledRightPig(:,1)=bosScaledRightPig(:,1).*-1;
+
+
+bosTransformedLeftPig = transformBosModel(bosScaledLeftPig,frameLeftPig);
+bosTransformedRightPig= transformBosModel(bosScaledRightPig,frameRightPig);
+
+figFoot = plotFunctionalBos(figFoot,bosTransformedLeftPig,...
+                                bosColorPig,'-',subPlotPosition);
+figFoot = plotFunctionalBos(figFoot,bosTransformedRightPig,...
+                                bosColorPig,'-',subPlotPosition);
+
+
+
+here=1;
+
+
+
+
