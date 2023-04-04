@@ -6,7 +6,7 @@ clear all;
 %csv files normBosModelPigBare.csv and normBosModelPigShod.csv in the 
 %data folder you do not need to do this.
 flag_createPigBosFromIorBos=0;
-modelType = 'Shod'; %'Bare' or 'Shod'
+modelType = 'Bare'; %'Bare' or 'Shod'
 
 bosColorIor = [0,0,1];
 bosColorPig = [1,0,1];
@@ -30,10 +30,19 @@ if(flag_createPigBosFromIorBos==0)
 end
 
 
-index=1; 
 
-mkrPos   = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers;
-mkrNames = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkerNames;
+
+switch modelType
+    case 'Bare'
+        mkrPos   = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers;
+    case 'Shod'
+        mkrPos   = Data_PiG_IOR.Sub(1).Run_static.c3dMarkers;        
+    otherwise
+        assert(0,'Error: modelType must be either Bare or Shod');
+end
+
+
+
 
 %%
 % Plot configuration
@@ -74,12 +83,13 @@ figFoot=plotMarkerPositions(figFoot,mkrPos,plotColor,...
 %%
 % Plot the IOR foot frames
 %%
+rowIndex=1; 
 
 [frameLeftOffsetIor, frameRightOffsetIor]=...
-        getIorFootOffsetFrames(index, mkrPos);
+        getIorFootOffsetFrames(rowIndex, mkrPos);
 
 [frameLeftIor, frameRightIor]= getIorFootFrames(...
-                            index, ...
+                            rowIndex, ...
                             mkrPos, ...
                             frameLeftOffsetIor, ...
                             frameRightOffsetIor);
@@ -92,7 +102,7 @@ figFoot = plotFrame(figFoot,frameRightIor,plotAxisScale,...
 
 
 [footLengthIor, midFootLengthIor, footWidthIor] =...
-    getIorFootSize(index, frameLeftIor, frameRightIor, mkrPos);
+    getIorFootSize(rowIndex, frameLeftIor, frameRightIor, mkrPos);
 
 bosScaledLeftIor = normBosModelIor;
 bosScaledLeftIor(:,1)=bosScaledLeftIor(:,1).*footWidthIor;
@@ -116,7 +126,7 @@ figFoot = plotFunctionalBos(figFoot,bosTransformedRightIor,...
 %%
 
 %[frameLeftOffset, frameRightOffset]=...
-%        getIorFootOffsetFrames(index, mkrPos, mkrNames);
+%        getIorFootOffsetFrames(rowIndex, mkrPos, mkrNames);
 
 
 
@@ -136,10 +146,10 @@ mkrPosPig.LANK = mkrPos.L_FAL;
 
 
 [frameLeftOffsetPig, frameRightOffsetPig]=...
-        getPigFootOffsetFrames(index, mkrPosPig);
+        getPigFootOffsetFrames(rowIndex, mkrPosPig);
 
 [frameLeftPig, frameRightPig]= getPigFootFrames(...
-                            index, ...
+                            rowIndex, ...
                             mkrPosPig, ...
                             frameLeftOffsetPig, ...
                             frameRightOffsetPig);
