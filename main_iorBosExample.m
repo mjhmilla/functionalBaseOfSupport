@@ -1,6 +1,9 @@
 clc;
 close all;
 clear all;
+
+addpath('code');
+
 %%
 % M.Millard
 % 4 April 2023
