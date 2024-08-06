@@ -19,14 +19,19 @@ addpath('code');
 %%
 % Inputs
 %%
-load(fullfile(dataDir,'Data_PiG_IOR_Static.mat'));
+
+%%
+% Load the bos models and the marker data
+%%
 
 normBosModelIor=readmatrix(...
-    fullfile(dataDir,sprintf('normBosModelIor%s.csv',modelType)));
+    fullfile(dataDir,'normBosModel',...
+             sprintf('normBosModelIor%s.csv',modelType)));
 
 if(flag_createPigBosFromIorBos==0)
     normBosModelPig=readmatrix(...
-        fullfile(dataDir,sprintf('normBosModelPig%s.csv',modelType)));
+        fullfile(dataDir,'normBosModel',...
+                 sprintf('normBosModelPig%s.csv',modelType)));
 end
 
 
@@ -34,14 +39,17 @@ end
 
 switch modelType
     case 'Bare'
-        mkrPos   = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers;
+        mkrPos = readCsvConvertToStruct(...
+                    fullfile(dataDir,'staticMarkerData',...
+                        'footMarkersIorPig_Bare.csv'));
     case 'Shod'
-        mkrPos   = Data_PiG_IOR.Sub(1).Run_static.c3dMarkers;        
+        mkrPos = readCsvConvertToStruct(...
+                    fullfile(dataDir,'staticMarkerData',...
+                      'footMarkersIorPig_Shod.csv'));
+        
     otherwise
         assert(0,'Error: modelType must be either Bare or Shod');
 end
-
-
 
 
 %%
@@ -175,16 +183,16 @@ if(flag_createPigBosFromIorBos==1)
         bosModelPigLeft(i,:) = [rP1P(1,1),rP1P(2,1)];
         
         assert(abs(rP1P(3,1))<1e-6,...
-               ['Error: Something went wrong rP1P is a point on the bos',...
-                'in the foot frame: the z component should be 0 but is not']);
+            ['Error: Something went wrong rP1P is a point on the bos',...
+             'in the foot frame: the z component should be 0 but is not']);
 
         r010 = bosTransformedRightIor(i,:)';
         rP1P = frameRightPig.E'*(r010-frameRightPig.r);
         bosModelPigRight(i,:) = [rP1P(1,1),rP1P(2,1)];
 
         assert(abs(rP1P(3,1))<1e-6,...
-               ['Error: Something went wrong rP1P is a point on the bos',...
-                'in the foot frame: the z component should be 0 but is not']);        
+            ['Error: Something went wrong rP1P is a point on the bos',...
+             'in the foot frame: the z component should be 0 but is not']);        
         
     end
     footLengthPig =(norm(mkrPosPig.('RTOE')-mkrPosPig.('RHEE')) ...

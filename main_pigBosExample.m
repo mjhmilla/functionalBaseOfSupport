@@ -6,19 +6,16 @@ addpath('code');
 
 %%
 % M.Millard
-% 4 April 2023
+% 6 August 2024
 %
 % 1. Prerequisites:
 %   For this function to work you must have the following files:
 %
-%     data/normBosModelPigShod.csv
-%     data/normBosModelPigBare.csv
+%     data/normBosModel/normBosModelIorShod.csv
+%     data/normBosModel/normBosModelIorBare.csv
 %
-%   If you do not have these files, you can generate them by running
-%  
-%     main_testFunctionalBosModel.m 
-%
-%   with the appropriate flags set.
+%     data/staticMarkerData/footMarkersIorPig_Bare.csv
+%     data/staticMarkerData/footMarkersIorPig_Shod.csv
 %
 % 2. Highlights
 %  See the code block titled 'PIG Bos Example Code' for an example of how
@@ -38,9 +35,7 @@ dataDir = fullfile(mainDir,'data');
 % PIG Bos Example Code
 %%
 
-%1. 
-% Load the c3d data and put it into a standardized struct
-load(fullfile(dataDir,'Data_PiG_IOR_Static.mat'));
+%1. Load the marker data and the bos model
 
 %Put the c3d data into a standardized struct that contains the 
 %conventional names for PiG foot markers
@@ -49,21 +44,36 @@ mkrPosPig = struct('RTOE',[],'RHEE',[],'RANK',[],...
 
 switch modelType
     case 'Bare'
-        mkrPosPig.RTOE = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers.R_FM2_top;
-        mkrPosPig.RHEE = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers.R_FCC;
-        mkrPosPig.RANK = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers.R_FAL;
-        
-        mkrPosPig.LTOE = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers.L_FM2_top;
-        mkrPosPig.LHEE = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers.L_FCC;
-        mkrPosPig.LANK = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers.L_FAL;
+        mkrPos = readCsvConvertToStruct(...
+                    fullfile(dataDir,'staticMarkerData',...
+                        'footMarkersIorPig_Bare.csv'));
     case 'Shod'
-        mkrPosPig.RTOE = Data_PiG_IOR.Sub(1).Run_static.c3dMarkers.R_FM2_top;
-        mkrPosPig.RHEE = Data_PiG_IOR.Sub(1).Run_static.c3dMarkers.R_FCC;
-        mkrPosPig.RANK = Data_PiG_IOR.Sub(1).Run_static.c3dMarkers.R_FAL;
+        mkrPos = readCsvConvertToStruct(...
+                    fullfile(dataDir,'staticMarkerData',...
+                      'footMarkersIorPig_Shod.csv'));
         
-        mkrPosPig.LTOE = Data_PiG_IOR.Sub(1).Run_static.c3dMarkers.L_FM2_top;
-        mkrPosPig.LHEE = Data_PiG_IOR.Sub(1).Run_static.c3dMarkers.L_FCC;
-        mkrPosPig.LANK = Data_PiG_IOR.Sub(1).Run_static.c3dMarkers.L_FAL;
+    otherwise
+        assert(0,'Error: modelType must be either Bare or Shod');
+end
+
+
+switch modelType
+    case 'Bare'
+        mkrPosPig.RTOE = mkrPos.R_FM2_top;
+        mkrPosPig.RHEE = mkrPos.R_FCC;
+        mkrPosPig.RANK = mkrPos.R_FAL;
+        
+        mkrPosPig.LTOE = mkrPos.L_FM2_top;
+        mkrPosPig.LHEE = mkrPos.L_FCC;
+        mkrPosPig.LANK = mkrPos.L_FAL;
+    case 'Shod'
+        mkrPosPig.RTOE = mkrPos.R_FM2_top;
+        mkrPosPig.RHEE = mkrPos.R_FCC;
+        mkrPosPig.RANK = mkrPos.R_FAL;
+        
+        mkrPosPig.LTOE = mkrPos.L_FM2_top;
+        mkrPosPig.LHEE = mkrPos.L_FCC;
+        mkrPosPig.LANK = mkrPos.L_FAL;
     otherwise
         assert(0,'Error: modelType must be either Bare or Shod');
 end
@@ -75,7 +85,7 @@ end
 % Load the normalized Pig Bos model.
 %       Note: this normalized foot is a normalized left foot
 normBosModelPig=readmatrix(...
-    fullfile(dataDir,sprintf('normBosModelPig%s.csv',modelType)));
+    fullfile(dataDir,'normBosModel',sprintf('normBosModelPig%s.csv',modelType)));
 
 
 

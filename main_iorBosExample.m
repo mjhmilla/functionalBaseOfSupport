@@ -6,19 +6,16 @@ addpath('code');
 
 %%
 % M.Millard
-% 4 April 2023
+% 6 August 2024
 %
 % 1. Prerequisites:
 %   For this function to work you must have the following files:
 %
-%     data/normBosModelIorShod.csv
-%     data/normBosModelIorBare.csv
+%     data/normBosModel/normBosModelIorShod.csv
+%     data/normBosModel/normBosModelIorBare.csv
 %
-%   If you do not have these files, you can generate them by running
-%  
-%     main_testFunctionalBosModel.m 
-%
-%   with the appropriate flags set.
+%     data/staticMarkerData/footMarkersIorPig_Bare.csv
+%     data/staticMarkerData/footMarkersIorPig_Shod.csv
 %
 % 2. Highlights
 %  See the code block titled 'IOR Bos Example Code' for an example of how
@@ -38,16 +35,18 @@ dataDir = fullfile(mainDir,'data');
 % IOR Bos Example Code
 %%
 
-%1. 
-% Load the c3d data and put it into a standardized struct
-load(fullfile(dataDir,'Data_PiG_IOR_Static.mat'));
+%1. Load the marker data and the bos model
 
-%Put the c3d data into a standardized
 switch modelType
     case 'Bare'
-        mkrPos   = Data_PiG_IOR.Sub(1).Bar_static.c3dMarkers;
+        mkrPos = readCsvConvertToStruct(...
+                    fullfile(dataDir,'staticMarkerData',...
+                        'footMarkersIorPig_Bare.csv'));
     case 'Shod'
-        mkrPos   = Data_PiG_IOR.Sub(1).Run_static.c3dMarkers;        
+        mkrPos = readCsvConvertToStruct(...
+                    fullfile(dataDir,'staticMarkerData',...
+                      'footMarkersIorPig_Shod.csv'));
+        
     otherwise
         assert(0,'Error: modelType must be either Bare or Shod');
 end
@@ -56,9 +55,8 @@ end
 % Load the normalized Ior Bos model.
 %       Note: this normalized foot is a normalized left foot
 normBosModelIor=readmatrix(...
-    fullfile(dataDir,sprintf('normBosModelIor%s.csv',modelType)));
-
-
+    fullfile(dataDir,'normBosModel',...
+    sprintf('normBosModelIor%s.csv',modelType)));
 
 
 %3.
