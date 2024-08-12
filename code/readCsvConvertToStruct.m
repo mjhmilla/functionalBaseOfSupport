@@ -29,7 +29,11 @@ for i=1:1:(length(delimiterIndices)+1)
     end
 
     if(idx1-1-idx0 > 0)
-        substr = header(idx0:(idx1-1));
+        if(i <= length(delimiterIndices))
+            substr = header(idx0:(idx1-1));    
+        else
+            substr = header(idx0:(idx1));        
+        end
     else
         substr = '';
     end
