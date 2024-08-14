@@ -14,9 +14,11 @@ addpath('code');
 %       data/pilotData/trial_01
 %       data/pilotData/trial_02
 %       data/pilotData/trial_03
+%       data/pilotData/trial_07
 %       data/pilotData/trial_08
 %       data/pilotData/trial_09
-%       data/pilotData/trial_10
+%
+%       data/configPilot1
 %
 %   Trials 8-10 are data from single foot FBOS trials while trials 1-3 are
 %   from two foot FBOS trials. These contain marker data and force plate 

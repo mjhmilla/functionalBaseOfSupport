@@ -11,10 +11,10 @@ addpath('code');
 % 1. Prerequisites:
 %   For this function to work you must have the following files:
 %
-%     data/normBosModel/normBosModelIorShod.csv
+%     data/normBosModel/normBosModelIorShod.csv or
 %     data/normBosModel/normBosModelIorBare.csv
 %
-%     data/staticMarkerData/footMarkersIorPig_Bare.csv
+%     data/staticMarkerData/footMarkersIorPig_Bare.csv or
 %     data/staticMarkerData/footMarkersIorPig_Shod.csv
 %
 % 2. Highlights
