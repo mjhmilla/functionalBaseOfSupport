@@ -3,6 +3,7 @@
 %
 % SPDX-License-Identifier: MIT
 %%
+
 function figH = plotExportConfig(figH,pageWidth,pageHeight)
 figure(figH);
 set(gcf, 'InvertHardCopy', 'off');

@@ -1,3 +1,10 @@
+%%
+% SPDX-FileCopyrightText: 2024 Matthew Millard <millard.matthew@gmail.com>
+%
+% SPDX-License-Identifier: MIT
+%
+%%
+
 function [frameLeft, frameRight]= getIorFootFrames(index, mkrPos,...
                                         frameLeftOffset, frameRightOffset)
 

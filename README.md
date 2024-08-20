@@ -6,6 +6,15 @@ This is a collection of Matlab scripts that will demonstrate how to compute the 
 
   - Millard M & Sloot LH (2024) The basis of balance analysis: the functional base of support provided by the human foot. (in preparation)
 
+
+All of the code and files in this repository are covered by the license mentioned in the SPDX file header which makes it possible to audit the licenses in this code base using the ```reuse lint``` command from https://api.reuse.software/. A full copy of the license can be found in the LICENSES folder. To keep the reuse tool happy even this file has a license:
+
+ SPDX-FileCopyrightText: 2024 Matthew Millard <millard.matthew@gmail.com>
+
+ SPDX-License-Identifier: MIT
+
+Please note that csv files in the data folder do not have license headers though these files are also offered under the MIT license.
+
 # Quick start
 1. Make sure that the data folder contains:
 

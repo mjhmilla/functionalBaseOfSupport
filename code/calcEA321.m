@@ -1,3 +1,10 @@
+%%
+% SPDX-FileCopyrightText: 2024 Matthew Millard <millard.matthew@gmail.com>
+%
+% SPDX-License-Identifier: MIT
+%
+%%
+
 function ea321 = calcEA321(R01)
 %%
 % This function extracts the three 3-2-1 Euler angles that 
