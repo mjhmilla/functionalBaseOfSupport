@@ -9,6 +9,9 @@ clc;
 close all;
 clear all;
 
+distanceTolerance = 0.0001; %Points that are closer than this distance
+                            %are treated as identical
+
 addpath('code');
 
 %%
@@ -379,7 +382,7 @@ end
 
 %%
 % Build the trial bos model by:
-% 1. Taking the convex hull of the left and right feet (for trials that
+% 1. Taking the average of the left and right feet (for trials that
 %    include both feet)
 % 2. Computing the average fbos of all trials
 %%
@@ -389,17 +392,18 @@ for indexTrial=1:1:length(frameData)
       && frameData(indexTrial).right.hasData==1)
         
         %Note the negative sign: the combined model will be a left foot
-        xy = zeros(size(fbosData(indexTrial).('left').fbos,1) ... 
-                  +size(fbosData(indexTrial).('right').fbos,1), 2 );
+        xyLeft=fbosData(indexTrial).('left').fbos;
+        xyRightFlipped = fbosData(indexTrial).('right').fbos;        
+        xyRightFlipped(:,1)=xyRightFlipped(:,1).*-1;
 
-        xy(:,1) = [fbosData(indexTrial).('left').fbos(:,1);...
-                  -fbosData(indexTrial).('right').fbos(:,1)];
+        %convhull is taken to order the points counter-clockwise (it
+        %seems to this this for free, which is nice)
+        idxCH = convhull(xyRightFlipped(:,1),xyRightFlipped(:,2));
+        xyRightFlipped=xyRightFlipped(idxCH,:);
 
-        xy(:,2) = [fbosData(indexTrial).('left').fbos(:,2);...
-                   fbosData(indexTrial).('right').fbos(:,2)];
 
-        idxCH =convhull(xy(:,1),xy(:,2));
-        fbosData(indexTrial).combined.fbos = xy(idxCH,:);
+        fbosData(indexTrial).combined.fbos = ...
+            calcArcLengthAverage(xyLeft, xyRightFlipped);
 
     elseif(frameData(indexTrial).left.hasData==1)
         fbosData(indexTrial).combined.fbos = ...

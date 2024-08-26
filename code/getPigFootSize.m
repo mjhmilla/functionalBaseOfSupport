@@ -5,7 +5,7 @@
 %
 %%
 
-function [footLengthIor, midFootLengthIor, footWidthIor] = getPigFootSize(idxRef,...
+function [footLengthPig, midFootLengthPig, footWidthPig] = getPigFootSize(idxRef,...
                 frameLeft, frameRight, ...
                 ratio_MidFootLengthIor_MidFootLengthPig,...
                 ratio_FootLengthIor_MidFootLengthIor,...
@@ -28,17 +28,17 @@ function [footLengthIor, midFootLengthIor, footWidthIor] = getPigFootSize(idxRef
  midFootLengthR = rLenR(2,1);
  midFootLengthIorR = midFootLengthR*ratio_MidFootLengthIor_MidFootLengthPig;
  
- midFootLengthIor = 0.5*(midFootLengthIorL+midFootLengthIorR);
+ midFootLengthPig = 0.5*(midFootLengthIorL+midFootLengthIorR);
         
 
  footLengthL    = midFootLengthIorL*ratio_FootLengthIor_MidFootLengthIor;      
 
  footLengthR    = midFootLengthIorR*ratio_FootLengthIor_MidFootLengthIor; 
 
- footLengthIor     = 0.5*(footLengthL+footLengthR);
+ footLengthPig     = 0.5*(footLengthL+footLengthR);
 
 
  footWidthIorL = midFootLengthIorL*ratio_FootWidthIor_MidFootLengthIor;      
  footWidthIorR = midFootLengthIorR*ratio_FootWidthIor_MidFootLengthIor;
- footWidthIor  = 0.5*(footWidthIorL+footWidthIorR);
+ footWidthPig  = 0.5*(footWidthIorL+footWidthIorR);
 
