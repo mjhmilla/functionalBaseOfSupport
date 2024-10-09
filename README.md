@@ -42,3 +42,9 @@ Please note that csv files in the data folder do not have license headers though
 After going through the code in these two examples (the comments will direct you to the relevant sections) you will be able to calculate the location of the FBOS model in your own data.
 
 5. For an example of how to **create** a FBOS model from data try running main_bosModelConstructionExample.m. If you are interested in creating your own FBOS model you will need to perform the experiments that are described in the publications mentioned in the description.
+
+# Notes
+
+Usually experimental data from motion capture and force plate systems is put into c3d file format. For the purposes of this example the c3d data has been converted to csv data so that the example can be run without any additional dependencies. When you want to apply this to your own data you will probably have to work with the c3d data directly. To do this, it is recommended to use the freely available program ezc3d available on github:
+
+https://github.com/pyomeca/ezc3d

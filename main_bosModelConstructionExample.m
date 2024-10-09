@@ -9,9 +9,6 @@ clc;
 close all;
 clear all;
 
-distanceTolerance = 0.0001; %Points that are closer than this distance
-                            %are treated as identical
-
 addpath('code');
 
 %%
