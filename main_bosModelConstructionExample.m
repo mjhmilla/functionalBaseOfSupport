@@ -571,9 +571,13 @@ for i=1:1:length(normArcLength)
     fbosModel(i,2) = mean(xy(:,2));     
 end
 
+%Take the convhull of fbosModel to reduce the number of points in the
+%model to the bare minimum without any change to the shape of the polygon
+idxCH = convhull(fbosModel(:,1),fbosModel(:,2));
+fbosModel=fbosModel(idxCH,:);
+
 %Since this is all from the same participant the foot width and
 %length is the same across all trials. 
-
 footWidth  = metaData(1).data.footWidth;
 footLength = metaData(1).data.footLength;
 
