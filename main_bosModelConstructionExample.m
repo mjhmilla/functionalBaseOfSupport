@@ -39,13 +39,15 @@ modelType = 'Bare';
 
 flag_plotFbos = 1;
 flag_writeFbosModelToFile=1;
+flag_writeFbosExampleTrialModelsToFile=1;
 
 m2cm=100;
 
 
 mainDir = pwd;
 codeDir = fullfile(mainDir,'code');
-dataDir = fullfile(mainDir,'data','pilotData');
+dataDir = fullfile(mainDir,'data');
+pilotDataDir = fullfile(mainDir,'data','pilotData');
 outputDir= fullfile(mainDir,'output');
 
 forceThreshold = 0.4; %Minimum foot load for a point to count towards the
@@ -94,7 +96,7 @@ end
 % Load the trial meta data, marker data, and force plate data
 %%
 
-cd(dataDir);
+cd(pilotDataDir);
 configPilot1;
 cd(mainDir);
 
@@ -108,15 +110,15 @@ for indexTrial=1:1:length(trialFolders)
     fileNameForceData   = ['forcedata_',trialSuffix,'.csv']; 
     
     metaData(indexTrial).data = ...
-       readCsvConvertToStruct( fullfile(dataDir,...
+       readCsvConvertToStruct( fullfile(pilotDataDir,...
                             trialFolders{indexTrial},fileNameMetaData));
 
     markerData(indexTrial).data = ...
-        readCsvConvertToStruct( fullfile(dataDir,...
+        readCsvConvertToStruct( fullfile(pilotDataDir,...
                             trialFolders{indexTrial},fileNameMarkerData));
 
     forceData(indexTrial).data = ...
-        readCsvConvertToStruct( fullfile(dataDir,...
+        readCsvConvertToStruct( fullfile(pilotDataDir,...
                             trialFolders{indexTrial},fileNameForceData)); 
 
     if( strcmp( trialFolders{indexTrial}, quietStandingFolder ))
@@ -305,13 +307,14 @@ for indexTrial=1:1:length(frameData)
         fbosData(indexTrial).(foot).fbos = xy(idxCH,:);
 
         %
-        %Order the points beginning from the heel point
+        %Order the points beginning from the heel point and ending at 
+        %the heel point
         %
         [yHeel,idxH] = min(fbosData(indexTrial).(foot).fbos(:,2));
         nPtsCH = length(fbosData(indexTrial).(foot).fbos(:,2));
         idxOrderA = [idxH:nPtsCH];
         idxOrderB = [1:(idxH-1)];
-        idxOrder = [idxOrderA,idxOrderB];
+        idxOrder = [idxOrderA,idxOrderB,idxH];
         fbosData(indexTrial).(foot).fbos = ...
             fbosData(indexTrial).(foot).fbos(idxOrder,:);
 
@@ -397,8 +400,6 @@ for indexTrial=1:1:length(frameData)
         %seems to this this for free, which is nice)
         idxCH = convhull(xyRightFlipped(:,1),xyRightFlipped(:,2));
         xyRightFlipped=xyRightFlipped(idxCH,:);
-
-
         fbosData(indexTrial).combined.fbos = ...
             calcArcLengthAverage(xyLeft, xyRightFlipped);
 
@@ -409,7 +410,8 @@ for indexTrial=1:1:length(frameData)
         fbosData(indexTrial).combined.fbos = ...
             fbosData(indexTrial).('right').fbos;
     else
-        assert(0,'Error: Invalid trial: no data for either the left or right feet');
+        assert(0,['Error: Invalid trial: no data for',...
+                  ' either the left or right feet']);
     end
 
     %
@@ -422,6 +424,8 @@ for indexTrial=1:1:length(frameData)
     idxOrder = [idxOrderA,idxOrderB];
     fbosData(indexTrial).combined.fbos = ...
         fbosData(indexTrial).combined.fbos(idxOrder,:);
+
+
 
     legendText = [];
     legendColor = [];
@@ -594,6 +598,33 @@ if(flag_writeFbosModelToFile==1)
     
 end
 
+%
+%
+% Write trials 8 and 9 (single foot trials from the same participant)
+% to generate the figure to explain the arc-length averaging method
+%
+
+if(flag_writeFbosExampleTrialModelsToFile==1)
+
+    for i=1:1:length(frameData)
+        if(frameData(i).left.hasData==1 && ...
+           frameData(i).right.hasData==0)
+            fullFilePath = fullfile(dataDir,'exampleNormalizedFbos',...
+                ['participant01_fbosNormExample_',...
+                 trialFolders{i},'_left.csv']);
+        
+            fbosNormalized = fbosData(i).combined.fbos;
+            fbosNormalized(:,1) = fbosNormalized(:,1)./footWidth;
+            fbosNormalized(:,2) = fbosNormalized(:,2)./footLength;
+            
+            dlmwrite(fullFilePath,fbosNormalized,',');
+        end
+    end
+
+    metaData(indexTrial).data = ...
+       readCsvConvertToStruct( fullfile(pilotDataDir,...
+                            trialFolders{indexTrial},fileNameMetaData));    
+end
 
 %
 % 
