@@ -38,7 +38,7 @@ addpath('code');
 numberOfPlots = 1;
 
 numberOfVerticalPlotRows = 1;    
-numberOfHorizontalPlotColumns = 3.;
+numberOfHorizontalPlotColumns = 2.;
 
 plotWidth           = 5;
 plotHeight          = 2.82*plotWidth; %2.82 is approx footlength/footwidth
@@ -70,123 +70,107 @@ end
 
 figH =figure;
 
-ageKeywords = [{'YoungAdults'},{'MidageAdults'},{'OlderAdults'}];
 
-ageTitleKeywords = ...  
-    [{'Younger Adults'},{'Middle-aged Adults'},{'Older Adults'}];
+fbosModels(length(fbosFiles)) = struct('data',[],'n',0,...
+    'ageGroup','','footwear','','stance','','markerSet','','study','');
 
-shodKeywords = [{'Footwear'},{'Barefoot'}];
-
-testKeywords = [{'2Feet'},{'1Foot'}];
-
-mkrKeywords  = [{'Ior'},{'Pig'}];
-
+%%
+% Read the data in
+%%
+idx=1;
 for idxFile=1:1:length(fbosFiles)
-    
-    %Extract meta data from the name
-    ageId = 0;
-    n = 0;
-    for i=1:1:length(ageKeywords)
-        if(contains(fbosFiles{idxFile},ageKeywords{i}))
-            ageId=i;
-            
-            j = min(strfind(fbosFiles{idxFile},'_'))+1;
-            k = strfind(fbosFiles{idxFile},ageKeywords{i})-1;
-            tmpStr=fbosFiles{idxFile};
-            n = str2double(tmpStr(j:k));
-            break;
-        end
+    if(contains(fbosFiles{idxFile},'.csv'))
+        fname = fbosFiles{idxFile};
+        fileWords = strsplit(fname(1,1:(end-4)),'_');
+        fbosModels(idx).data = ...
+            readmatrix(fullfile(fbosDataDir, fbosFiles{idxFile}));
+        fbosModels(idx).n           = str2double(fileWords{2}(1,1:2));
+        fbosModels(idx).ageGroup    = fileWords{2}(1,3:end);
+        fbosModels(idx).footwear    = fileWords{3};
+        fbosModels(idx).stance      = fileWords{4};
+        fbosModels(idx).markerSet   = fileWords{5};
+        fbosModels(idx).study       = fileWords{6};
+        idx=idx+1;
     end
-    shodId = 0;
-    for i=1:1:length(shodKeywords)
-        if(contains(fbosFiles{idxFile},shodKeywords{i}))
-            shodId=i;
-            break;
-        end
-    end
-    testId = 0;
-    for i=1:1:length(testKeywords)
-        if(contains(fbosFiles{idxFile},testKeywords{i}))
-            testId=i;
-            break;
-        end
-    end
-    mkrId = 0;
-    for i=1:1:length(mkrKeywords)
-        if(contains(fbosFiles{idxFile},mkrKeywords{i}))
-            mkrId=i;
-            break;
-        end
-    end
-    
-    %Since there are multiple barefoot and shod trials, figure out if this
-    %which repeat this is
-    iter=0;
-    repNumber=0;
-    for i=1:1:length(fbosFiles)
-        ageFlag = contains(fbosFiles{i},ageKeywords{ageId});
-        shodFlag = contains(fbosFiles{i},shodKeywords{shodId});
-        testFlag = contains(fbosFiles{i},testKeywords{testId});
-        mkrFlag = contains(fbosFiles{i},mkrKeywords{mkrId});
-        
-        if(ageFlag && shodFlag && testFlag && mkrFlag)
-            iter=iter+1;
-            if(i==idxFile)
-                if(iter >3)
-                    here=1;
-                end
-                repNumber=iter;
-            end
-        end
-    end
-
-    lineColor =[0,0,0];
-    shodStr = '';
-    switch shodId
-        case 1
-            lineColor = lineSpecs.footwear(repNumber,:);
-            shodStr = 'Shod';
-        case 2
-            lineColor = lineSpecs.barefoot(repNumber,:);            
-            shodStr = 'Bare';
-        otherwise assert(0,'Error: unrecognized footware keyword');
-    end
-
-    testStr='';
-    lineType = '';
-    switch testId
-        case 1
-            lineType = lineSpecs.twofeet;
-            testStr = '2 feet';
-        case 2
-            lineType = lineSpecs.onefoot;            
-            testStr = '1 feet';            
-        otherwise assert(0,'Error: unrecognized test type');
-    end
-
-    normBosModel=readmatrix(fullfile(fbosDataDir, fbosFiles{idxFile}));
-    
-    figure(figH);
-    subplot('Position',reshape(subPlotPanel(1,ageId,:),1,4));
-    plot(normBosModel(:,1),normBosModel(:,2),lineType,'Color',lineColor,...
-         'DisplayName',[shodStr,' ',testStr,'(',num2str(n),')']);
-    hold on;
-
-
 end
 
-for idx=1:1:3
-    figure(figH);
-    subplot('Position',reshape(subPlotPanel(1,idx,:),1,4));
-    xlabel('Norm. X (m/m)');
-    ylabel('Norm. Y (m/m)');
-    legend('Location','northeast');
+%%
+% Plot the data
+%%
+idxYA = 0;
+for idx=1:1:length(fbosModels)
+    if(   contains(fbosModels(idx).footwear,'Footwear') ...
+       && contains(fbosModels(idx).stance,'2Feet') ...
+       && contains(fbosModels(idx).study,'Sloot2025') )
+
+        lineColor = [];
+        switch fbosModels(idx).ageGroup
+            case 'YoungAdults'
+                lineColor = [0,0,0];
+            case 'MidageAdults'
+                lineColor = [1,1,1].*0.75;                
+            case 'OlderAdults'
+                lineColor = [68,119,170]./255;
+            otherwise
+                assert(0,'Error: Unrecognized age group');
+        end
+
+        idxAdult = strfind(fbosModels(idx).ageGroup,'Adults');
+        ageStr = fbosModels(idx).ageGroup(1,1:(idxAdult-1));
+        displayName = [ageStr, '(n=',num2str(fbosModels(idx).n),')'];
+        displayName = [displayName, '-',fbosModels(idx).study];
+
+        subplot('Position',reshape(subPlotPanel(1,1,:),1,4));        
+        plot(fbosModels(idx).data(:,1),...
+             fbosModels(idx).data(:,2),'-',...
+             'Color',lineColor,...
+             'DisplayName',displayName,...
+             'LineWidth',2);
+        hold on;
+    end
+
+    if(contains(fbosModels(idx).ageGroup,'YoungAdults'))
+        idxYAN = idxYA/3;
+        lineColor = [1,0,0].*idxYAN + [0,0,1].*(1-idxYAN);
+        displayName = [fbosModels(idx).footwear,' ',...
+            fbosModels(idx).stance,' (n=',num2str(fbosModels(idx).n),')'];
+        displayName = [displayName, '-',fbosModels(idx).study];
+
+        subplot('Position',reshape(subPlotPanel(1,2,:),1,4));        
+        plot(fbosModels(idx).data(:,1),...
+             fbosModels(idx).data(:,2),'-',...
+             'Color',lineColor,...
+             'DisplayName',displayName,...
+             'LineWidth',2);
+        hold on;
+
+        idxYA=idxYA+1;
+    end
+    
+end
+
+subplot('Position',reshape(subPlotPanel(1,1,:),1,4));        
+    box off;
+    legend;
     legend box off;
     xlim([-0.26,0.15]);
     ylim([-0.55,0.25]);
+    xlabel('Norm. X (x/foot-width)');
+    ylabel('Norm. Y (y/foot-length)');
+    title({'A. Comparison of 2-foot shod fBOS profiles of',...
+        'younger, middle-aged, and older adults'});
+
+subplot('Position',reshape(subPlotPanel(1,2,:),1,4));        
     box off;
-    title({'Normalized fBOS Profiles: ',ageTitleKeywords{idx}});
-end
+    legend;
+    legend box off;
+    xlim([-0.26,0.15]);
+    ylim([-0.55,0.25]);
+    xlabel('Norm. X (x/foot-width)');
+    ylabel('Norm. Y (y/foot-length)');
+    title({'B. Comparison of Young fBOS profiles when',...
+        'barefoot/shod, and 1-foot/2-feet'});
+
 
 figH=plotExportConfig(figH,pageWidth,pageHeight);
 

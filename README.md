@@ -28,12 +28,12 @@ Please note that csv files in the data folder do not have license headers though
         - normBosModelIorBare.csv  
         - normBosModelPigBare.csv  
     - data/normBosModelsYoungMidageOlderAdults
-        - normBosModel_14MidageAdults_Footwear_2Feet_Ior.csv
-        - normBosModel_22YoungAdults_Barefoot_1Foot_Ior.csv
-        - normBosModel_25YoungAdults_Footwear_2Feet_Ior.csv
-        - normBosModel_27YoungAdults_Barefoot_2Feet_Ior.csv
-        - normBosModel_34OlderAdults_Footwear_2Feet_Ior.csv
-        - normBosModel_38YoungAdults_Footwear_2Feet_Ior.csv
+        - normBosModel_14MidageAdults_Footwear_2Feet_Ior_Sloot2025.csv
+        - normBosModel_22YoungAdults_Barefoot_1Foot_Ior_Sloot2025.csv
+        - normBosModel_25YoungAdults_Footwear_2Feet_Ior_Sloot2025.csv
+        - normBosModel_27YoungAdults_Barefoot_2Feet_Ior_Sloot2025.csv
+        - normBosModel_34OlderAdults_Footwear_2Feet_Ior_Sloot2025.csv
+        - normBosModel_38YoungAdults_Footwear_2Feet_Ior_Sloot2025.csv
 
 2. Set the Matlab path to the main location of the local repository (you can see the folders 'code','data' and 'output').
 
@@ -45,7 +45,8 @@ Please note that csv files in the data folder do not have license headers though
 
 4. Run main_plotAgeGroupFunctionalBOSModels.m. This function loads the fbos models from the younger, middle-aged, and older-adult age categories that are described in Sloot et al. (2025). You should see
 
-  - A plot that contains the normalized fBOS models from there younger, middle-aged, and older adults
+  - A plot on the left that contains the normalized fBOS models from the younger, middle-aged, and older adults from Sloot 2025.
+  - A plot on the right that compares the fBOS models of younger adults in different conditions measured in two different studies: Sloot et al. 2025 and Millard and Sloot 2025
   - This plot will be saved in output/fig_fbos_YoungerMiddleAgedOlderAdults.pdf
 
 5. For an example of how to **apply** the functional base of support model to your own work, please run and carefully read the following example files. Make sure your path is set correctly to the main location of the local repository.
