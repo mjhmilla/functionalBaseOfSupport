@@ -38,7 +38,7 @@ addpath('code');
 numberOfPlots = 1;
 
 numberOfVerticalPlotRows = 1;    
-numberOfHorizontalPlotColumns = 2.;
+numberOfHorizontalPlotColumns = 1.;
 
 plotWidth           = 5;
 plotHeight          = 2.82*plotWidth; %2.82 is approx footlength/footwidth
@@ -98,6 +98,8 @@ end
 % Plot the data
 %%
 idxYA = 0;
+xTickList = [];
+yTickList = [];
 for idx=1:1:length(fbosModels)
     if(   contains(fbosModels(idx).footwear,'Footwear') ...
        && contains(fbosModels(idx).stance,'2Feet') ...
@@ -127,49 +129,74 @@ for idx=1:1:length(fbosModels)
              'DisplayName',displayName,...
              'LineWidth',2);
         hold on;
+
+        xTickList = [xTickList,min(fbosModels(idx).data(:,1)),...
+                               max(fbosModels(idx).data(:,1))];
+        yTickList = [yTickList,min(fbosModels(idx).data(:,2)),...
+                               max(fbosModels(idx).data(:,2))];
+        
     end
 
-    if(contains(fbosModels(idx).ageGroup,'YoungAdults'))
-        idxYAN = idxYA/3;
-        lineColor = [1,0,0].*idxYAN + [0,0,1].*(1-idxYAN);
-        displayName = [fbosModels(idx).footwear,' ',...
-            fbosModels(idx).stance,' (n=',num2str(fbosModels(idx).n),')'];
-        displayName = [displayName, '-',fbosModels(idx).study];
+    xTickList = unique(round(sort(xTickList),2));
+    yTickList = unique(round(sort(yTickList),2));
 
-        subplot('Position',reshape(subPlotPanel(1,2,:),1,4));        
-        plot(fbosModels(idx).data(:,1),...
-             fbosModels(idx).data(:,2),'-',...
-             'Color',lineColor,...
-             'DisplayName',displayName,...
-             'LineWidth',2);
-        hold on;
-
-        idxYA=idxYA+1;
-    end
+%     if(contains(fbosModels(idx).ageGroup,'YoungAdults'))
+%         idxYAN = idxYA/3;
+%         lineColor = [1,0,0].*idxYAN + [0,0,1].*(1-idxYAN);
+%         displayName = [fbosModels(idx).footwear,' ',...
+%             fbosModels(idx).stance,' (n=',num2str(fbosModels(idx).n),')'];
+%         displayName = [displayName, '-',fbosModels(idx).study];
+% 
+%         subplot('Position',reshape(subPlotPanel(1,2,:),1,4));        
+%         plot(fbosModels(idx).data(:,1),...
+%              fbosModels(idx).data(:,2),'-',...
+%              'Color',lineColor,...
+%              'DisplayName',displayName,...
+%              'LineWidth',2);
+%         hold on;
+% 
+%         idxYA=idxYA+1;
+%     end
     
 end
 
 subplot('Position',reshape(subPlotPanel(1,1,:),1,4));        
     box off;
-    legend;
+    legend('Location','northwest');
     legend box off;
-    xlim([-0.26,0.15]);
-    ylim([-0.55,0.25]);
+    axis tight;
+    xyLim = axis;
+
+    xMid    = 0.5*(xyLim(1,1)+xyLim(1,2)); 
+    xHWidth = 0.5*(xyLim(1,2)-xyLim(1,1));
+    xExt = [(xMid-xHWidth*1.1),(xMid+xHWidth*1.1)];
+
+    yMid    = 0.5*(xyLim(1,3)+xyLim(1,4)); 
+    yHWidth = 0.5*(xyLim(1,4)-xyLim(1,3));
+    yExt = [(yMid-yHWidth),(yMid+yHWidth*1.2)];
+
+    xlim(xExt);
+    ylim(yExt);
+
+    xticks(xTickList);
+    xtickangle(90);
+    yticks(yTickList);
+    
     xlabel('Norm. X (x/foot-width)');
     ylabel('Norm. Y (y/foot-length)');
     title({'A. Comparison of 2-foot shod fBOS profiles of',...
         'younger, middle-aged, and older adults'});
 
-subplot('Position',reshape(subPlotPanel(1,2,:),1,4));        
-    box off;
-    legend;
-    legend box off;
-    xlim([-0.26,0.15]);
-    ylim([-0.55,0.25]);
-    xlabel('Norm. X (x/foot-width)');
-    ylabel('Norm. Y (y/foot-length)');
-    title({'B. Comparison of Young fBOS profiles when',...
-        'barefoot/shod, and 1-foot/2-feet'});
+% subplot('Position',reshape(subPlotPanel(1,2,:),1,4));        
+%     box off;
+%     legend;
+%     legend box off;
+%     xlim([-0.26,0.15]);
+%     ylim([-0.55,0.25]);
+%     xlabel('Norm. X (x/foot-width)');
+%     ylabel('Norm. Y (y/foot-length)');
+%     title({'B. Comparison of Young fBOS profiles when',...
+%         'barefoot/shod, and 1-foot/2-feet'});
 
 
 figH=plotExportConfig(figH,pageWidth,pageHeight);

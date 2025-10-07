@@ -2,4 +2,5 @@
 *.pdf
 *.csv
 *.svg
-
+temp/*
+*.mat
