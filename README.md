@@ -1,12 +1,12 @@
 # Description
 
-This is a collection of Matlab scripts that will demonstrate how to compute the location of a functional-base-of-support (FBOS) model given either plug-in-gait or an IOR marker data. In addition, there is an example that shows you how to construct your own FBOS model using example data. The FBOS is described in these papers:
+This is a collection of Matlab scripts that will demonstrate how to compute the location of a functional-base-of-support (fBOS) model given either plug-in-gait or an IOR marker data. In addition, there is an example that shows you how to construct your own fBOS model using example data. The fBOS is described in these papers:
 
   - Sloot LH, Millard M, Werner C and Mombaur K (2020) Slow but Steady: Similar Sit-to-Stand Balance at Seat-Off in Older vs. Younger Adults. Front. Sports Act. Living 2:548174. doi: 10.3389/fspor.2020.548174
 
   -  Millard M, Sloot LH. A polygon model of the functional base-of-support during standing improves the accuracy of balance analysis. Journal of Biomechanics. 2025 Sep 9:112927. https://doi.org/10.1016/j.jbiomech.2025.112927
 
-  - Sloot LH, Gerhardy T, Mombaur K, Millard M. The size of the functional base of support decreases with age. bioRxiv. 2025:2025-05. https://doi.org/10.1101/2025.05.19.654897
+  - Sloot LH, Gerhardy T, Mombaur K, Millard M. The size of the functional base of support decreases with age. bioRxiv. 2025:2025-05. https://doi.org/10.1101/2025.05.19.654897 (accepted by Scientific Reports)
 
 All of the code and files in this repository are covered by the license mentioned in the SPDX file header which makes it possible to audit the licenses in this code base using the ```reuse lint``` command from https://api.reuse.software/. A full copy of the license can be found in the LICENSES folder. To keep the reuse tool happy even this file has a license:
 
@@ -29,9 +29,6 @@ Please note that csv files in the data folder do not have license headers though
         - normBosModelPigBare.csv  
     - data/normBosModelsYoungMidageOlderAdults
         - normBosModel_14MidageAdults_Footwear_2Feet_Ior_Sloot2025.csv
-        - normBosModel_22YoungAdults_Barefoot_1Foot_Ior_Sloot2025.csv
-        - normBosModel_25YoungAdults_Footwear_2Feet_Ior_Sloot2025.csv
-        - normBosModel_27YoungAdults_Barefoot_2Feet_Ior_Sloot2025.csv
         - normBosModel_34OlderAdults_Footwear_2Feet_Ior_Sloot2025.csv
         - normBosModel_38YoungAdults_Footwear_2Feet_Ior_Sloot2025.csv
 
@@ -54,9 +51,9 @@ Please note that csv files in the data folder do not have license headers though
   - main_iorBosExample.m
   - main_pigBosExample.m
 
-After going through the code in these two examples (the comments will direct you to the relevant sections) you will be able to calculate the location of the FBOS model in your own dat6.
+After going through the code in these two examples (the comments will direct you to the relevant sections) you will be able to calculate the location of the fBOS model in your own dat6.
 
-6. For an example of how to **create** a FBOS model from data try running main_bosModelConstructionExample.m. If you are interested in creating your own FBOS model you will need to perform the experiments that are described in the publications mentioned in the description.
+6. For an example of how to **create** a fBOS model from data try running main_bosModelConstructionExample.m. If you are interested in creating your own fBOS model you will need to perform the experiments that are described in the publications mentioned in the description.
 
 # Notes
 

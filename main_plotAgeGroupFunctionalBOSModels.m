@@ -98,8 +98,8 @@ end
 % Plot the data
 %%
 idxYA = 0;
-xTickList = [];
-yTickList = [];
+xTickList = [0];
+yTickList = [0];
 for idx=1:1:length(fbosModels)
     if(   contains(fbosModels(idx).footwear,'Footwear') ...
        && contains(fbosModels(idx).stance,'2Feet') ...
@@ -140,24 +140,6 @@ for idx=1:1:length(fbosModels)
     xTickList = unique(round(sort(xTickList),2));
     yTickList = unique(round(sort(yTickList),2));
 
-%     if(contains(fbosModels(idx).ageGroup,'YoungAdults'))
-%         idxYAN = idxYA/3;
-%         lineColor = [1,0,0].*idxYAN + [0,0,1].*(1-idxYAN);
-%         displayName = [fbosModels(idx).footwear,' ',...
-%             fbosModels(idx).stance,' (n=',num2str(fbosModels(idx).n),')'];
-%         displayName = [displayName, '-',fbosModels(idx).study];
-% 
-%         subplot('Position',reshape(subPlotPanel(1,2,:),1,4));        
-%         plot(fbosModels(idx).data(:,1),...
-%              fbosModels(idx).data(:,2),'-',...
-%              'Color',lineColor,...
-%              'DisplayName',displayName,...
-%              'LineWidth',2);
-%         hold on;
-% 
-%         idxYA=idxYA+1;
-%     end
-    
 end
 
 subplot('Position',reshape(subPlotPanel(1,1,:),1,4));        
@@ -178,6 +160,13 @@ subplot('Position',reshape(subPlotPanel(1,1,:),1,4));
     xlim(xExt);
     ylim(yExt);
 
+    plot([min(xExt),max(xExt)],[0,0],'-','Color',[1,1,1].*0.75,...
+         'HandleVisibility','off');
+    hold on;
+    plot([0,0],[min(yExt),max(yExt)],'-','Color',[1,1,1].*0.75,...
+         'HandleVisibility','off');
+    hold on;
+
     xticks(xTickList);
     xtickangle(90);
     yticks(yTickList);
@@ -186,17 +175,6 @@ subplot('Position',reshape(subPlotPanel(1,1,:),1,4));
     ylabel('Norm. Y (y/foot-length)');
     title({'A. Comparison of 2-foot shod fBOS profiles of',...
         'younger, middle-aged, and older adults'});
-
-% subplot('Position',reshape(subPlotPanel(1,2,:),1,4));        
-%     box off;
-%     legend;
-%     legend box off;
-%     xlim([-0.26,0.15]);
-%     ylim([-0.55,0.25]);
-%     xlabel('Norm. X (x/foot-width)');
-%     ylabel('Norm. Y (y/foot-length)');
-%     title({'B. Comparison of Young fBOS profiles when',...
-%         'barefoot/shod, and 1-foot/2-feet'});
 
 
 figH=plotExportConfig(figH,pageWidth,pageHeight);
